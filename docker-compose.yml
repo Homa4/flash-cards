@@ -1,0 +1,40 @@
+services:
+  app:
+    build: .
+    container_name: flashcards-app
+    depends_on:
+      - mongodb
+    stdin_open: true
+    tty: true
+    profiles:
+      - interactive
+    networks:
+      - flashcards-network
+
+  mongodb:
+    image: mongo:7
+    container_name: flashcards-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - flashcards-network
+
+  mongo-express:
+    image: mongo-express
+    container_name: flashcards-mongo-express
+    restart: always
+    ports:
+      - "8081:8081"
+    depends_on:
+      - mongodb
+    networks:
+      - flashcards-network
+
+volumes:
+  mongodb_data:
+
+networks:
+  flashcards-network:
+    driver: bridge
