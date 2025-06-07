@@ -1,3 +1,8 @@
+const sevenDays = 7;
+const threeDays = 3;
+const oneDay = 1;
+const halfDay = 0.5;
+
 class Word {
   constructor(data) {
     this.word = data.word;
@@ -45,10 +50,10 @@ class Word {
   getReviewInterval() {
     const successRate = this.getSuccessRate();
 
-    if (successRate >= 90) return 7;
-    if (successRate >= 70) return 3;
-    if (successRate >= 50) return 1;
-    return 0.5;
+    if (successRate >= 90) return sevenDays;
+    if (successRate >= 70) return threeDays;
+    if (successRate >= 50) return oneDay;
+    return halfDay;
   }
 }
 
