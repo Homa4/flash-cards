@@ -1,4 +1,4 @@
-const Word = require("../models/Word");
+const Word = require("../models/word");
 
 describe("Word model", () => {
   test("getSuccessRate returns 0 when no attempts", () => {
