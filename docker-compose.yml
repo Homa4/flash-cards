@@ -1,13 +1,20 @@
+version: "3.8"
+
 services:
   app:
     build: .
     container_name: flashcards-app
     depends_on:
       - mongodb
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017
     stdin_open: true
     tty: true
     profiles:
       - interactive
+    volumes:
+      - .:/app
+    working_dir: /app
     networks:
       - flashcards-network
 
@@ -27,6 +34,9 @@ services:
     restart: always
     ports:
       - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_URL: mongodb://mongodb:27017/
+      ME_CONFIG_BASICAUTH: false
     depends_on:
       - mongodb
     networks:
