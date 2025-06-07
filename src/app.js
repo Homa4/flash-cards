@@ -1,5 +1,6 @@
 const Database = require("./database");
-const colors = require("colors");
+const WordService = require("./services/word-service");
+const Menu = require("./ui/Menu");
 
 async function main() {
   console.log("🚀 Flashcards app starting...".cyan);
@@ -11,6 +12,9 @@ async function main() {
     console.log("Error while connecting to the database".red);
     process.exit(1);
   }
+
+  const wordService = new WordService(database);
+  const menu = new Menu(wordService);
 
   process.on("SIGINT", async () => {
     console.log("\n👋 Shutting down...".yellow);
