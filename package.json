@@ -1,0 +1,18 @@
+{
+  "name": "flashcards-app",
+  "version": "1.0.0",
+  "description": "console flashcards app for learning new words",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js"
+  },
+  "dependencies": {
+    "mongodb": "^6.3.0",
+    "readline-sync": "^1.4.10",
+    "colors": "^1.4.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}
