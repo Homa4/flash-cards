@@ -1,5 +1,5 @@
+require("colors");
 const readlineSync = require("readline-sync");
-// const colors = require("colors");
 
 class Menu {
   constructor(wordService) {
@@ -7,8 +7,8 @@ class Menu {
   }
 
   showMainMenu() {
-    // console.clear();
-    // console.log("ФЛЕШКАРТКИ ДЛЯ ВИВЧЕННЯ СЛІВ".rainbow.bold);
+    console.clear();
+    console.log("ФЛЕШКАРТКИ ДЛЯ ВИВЧЕННЯ СЛІВ".rainbow.bold);
     console.log("═".repeat(40).gray);
     console.log("1. 📖 Додати нове слово".cyan);
     console.log("2. 🔄 Повторити слова".yellow);

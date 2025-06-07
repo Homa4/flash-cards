@@ -12,6 +12,9 @@ services:
     tty: true
     profiles:
       - interactive
+    volumes:
+      - .:/app
+    working_dir: /app
     networks:
       - flashcards-network
 
