@@ -1,3 +1,7 @@
+const { MongoMemoryServer } = require("mongodb-memory-server");
+const { MongoClient } = require("mongodb");
+const Database = require("../database");
+const WordService = require("../services/word-service");
 const Word = require("../models/word");
 
 describe("Word model", () => {
@@ -63,5 +67,78 @@ describe("Word model", () => {
       lastReviewed: recentDate,
     });
     expect(word.shouldReview()).toBe(false);
+  });
+});
+
+// jest.setTimeout(60000);
+
+describe("WordService", () => {
+  let mongod;
+  let uri;
+  let dbClient;
+  let database;
+  let wordService;
+
+  beforeAll(async () => {
+    mongod = await MongoMemoryServer.create();
+    uri = mongod.getUri();
+    dbClient = new MongoClient(uri);
+    await dbClient.connect();
+    database = new Database();
+    database.client = dbClient;
+    database.db = dbClient.db("test");
+    wordService = new WordService(database);
+  });
+
+  afterAll(async () => {
+    if (dbClient) await dbClient.close();
+    if (mongod) await mongod.stop();
+  });
+
+  beforeEach(async () => {
+    await database.db.collection("words").deleteMany({});
+  });
+
+  test("addWord and getAllWords", async () => {
+    const addResult = await wordService.addWord({
+      word: "apple",
+      translation: "яблуко",
+    });
+    expect(addResult.success).toBe(true);
+    const all = await wordService.getAllWords();
+    expect(all.length).toBe(1);
+    expect(all[0].word).toBe("apple");
+  });
+
+  test("searchWords finds by word and translation", async () => {
+    await wordService.addWord({ word: "banana", translation: "банан" });
+    await wordService.addWord({ word: "grape", translation: "виноград" });
+    let results = await wordService.searchWords("ban");
+    expect(results.map((w) => w.word)).toContain("banana");
+    results = await wordService.searchWords("град");
+    expect(results.map((w) => w.translation)).toContain("виноград");
+  });
+
+  test("deleteWord removes a word", async () => {
+    await wordService.addWord({ word: "kiwi", translation: "ківі" });
+    const deleted = await wordService.deleteWord("kiwi");
+    expect(deleted).toBe(true);
+    const all = await wordService.getAllWords();
+    expect(all).toHaveLength(0);
+  });
+
+  test("getStats returns correct statistics", async () => {
+    await wordService.addWord({ word: "pear", translation: "груша" });
+    const words = await wordService.getWordsForReview(1);
+
+    const wordObj = words[0];
+    const updated = await wordService.updateWordStats(wordObj, true);
+    expect(updated).toBe(true);
+    const stats = await wordService.getStats();
+    expect(stats.totalWords).toBe(1);
+    expect(stats.totalAttempts).toBe(1);
+    expect(stats.totalCorrect).toBe(1);
+    expect(stats.successRate).toBe(100);
+    expect(stats.avgDifficulty).toBeGreaterThanOrEqual(1);
   });
 });
